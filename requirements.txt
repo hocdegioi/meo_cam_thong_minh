@@ -1,5 +1,6 @@
 streamlit
 SpeechRecognition
 gtts
-streamlit-mic-recorder
+gdown
 pydub
+streamlit-mic-recorder
