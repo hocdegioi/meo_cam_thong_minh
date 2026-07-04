@@ -3,3 +3,4 @@ SpeechRecognition
 gtts
 gdown
 pydub
+streamlit-mic-recorder
