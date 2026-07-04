@@ -1,85 +1,71 @@
 import streamlit as st
-from streamlit_mic_recorder import mic_recorder
 from gtts import gTTS
 import tempfile
-import drive_manager
 import speech_recognition as sr
-from pydub import AudioSegment
 import time
+import os
 
-st.set_page_config(page_title="Mèo Cam Thông Minh", page_icon="🐱")
+# --- Cấu hình trang ---
+st.set_page_config(page_title="Mèo Cam Dạy Bé Học", page_icon="🐱")
 
-# --- Hàm phát âm ---
+# --- Hàm hỗ trợ ---
 def speak(text):
+    """Mèo Cam phát âm từ vựng"""
     tts = gTTS(text=text, lang='en')
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
         tts.save(fp.name)
         st.audio(fp.name, format="audio/mp3", autoplay=True)
 
-# --- Hàm kiểm tra nhanh ---
-def check_audio_fast(audio_bytes, target_word):
-    # Sử dụng recognizer nhanh hơn
+def listen_to_child():
+    """Lắng nghe giọng bé mà không cần nhấn nút"""
     recognizer = sr.Recognizer()
-    recognizer.dynamic_energy_threshold = False # Bỏ qua bước đo mức âm thanh
-    recognizer.energy_threshold = 300 
-    
+    with sr.Microphone() as source:
+        recognizer.adjust_for_ambient_noise(source, duration=0.5)
+        audio = recognizer.listen(source, phrase_time_limit=3)
     try:
-        with tempfile.NamedTemporaryFile(delete=True, suffix=".webm") as tmp_webm:
-            tmp_webm.write(audio_bytes)
-            tmp_webm.flush()
-            audio_converted = AudioSegment.from_file(tmp_webm.name, format="webm")
-            
-            with tempfile.NamedTemporaryFile(delete=True, suffix=".wav") as tmp_wav:
-                audio_converted.export(tmp_wav.name, format="wav", codec="pcm_s16le")
-                with sr.AudioFile(tmp_wav.name) as source:
-                    audio_data = recognizer.record(source)
-                    # Timeout cực ngắn để phản hồi ngay
-                    text = recognizer.recognize_google(audio_data, language="en-US")
-                    return text.lower().strip() == target_word.lower().strip()
+        return recognizer.recognize_google(audio, language="en-US").lower()
     except:
-        return False
+        return ""
 
-# --- Logic chính ---
+# --- Khởi tạo trạng thái ---
 if 'index' not in st.session_state:
     st.session_state.index = 0
+    st.session_state.vocab = ["apple", "banana", "cat"] # Mẫu, bạn thay bằng data_loader
     st.session_state.started = False
 
-st.title("🐱 Mèo Cam Giao Tiếp Tốc Độ")
+st.title("🐱 Mèo Cam Học Tiếng Anh")
 
+# --- Giao diện ---
 if not st.session_state.started:
-    if st.button("Bắt đầu ngay"):
-        content = drive_manager.get_lesson_content("Lop_3", "Unit_1")
-        st.session_state.vocabulary = content.get('vocabulary', [])
+    if st.button("Bắt đầu bài học (Nhấn 1 lần duy nhất)"):
         st.session_state.started = True
         st.rerun()
-
-if st.session_state.started:
-    vocab = st.session_state.vocabulary
+else:
     idx = st.session_state.index
-    
-    if idx < len(vocab):
-        item = vocab[idx]
-        word = item.get('en', item) if isinstance(item, dict) else str(item)
+    if idx < len(st.session_state.vocab):
+        target_word = st.session_state.vocab[idx]
         
-        st.subheader(f"Mèo Cam nói: {word}")
+        st.subheader(f"Mèo Cam đang dạy: {target_word}")
+        st.image("images/meo_cam.gif") # Bạn nhớ để file gif trong thư mục images
         
-        # Ghi âm tốc độ cao
-        audio = mic_recorder(start_prompt="Nói ngay!", stop_prompt="Đang check...", key=f"fast_{idx}")
+        # 1. Mèo dạy
+        speak(target_word)
+        st.write("Mèo Cam: Bé đọc lại đi nào...")
         
-        if audio:
-            with st.spinner('Mèo Cam đang kiểm tra...'):
-                if check_audio_fast(audio['bytes'], word):
-                    st.success("Đúng rồi! 🎉")
-                    st.balloons()
-                    time.sleep(0.5) # Giảm thời gian chờ
-                    st.session_state.index += 1
-                    st.rerun()
-                else:
-                    st.error("Chưa đúng, đọc lại đi bé!")
-                    time.sleep(1)
-                    st.rerun()
+        # 2. Tự động lắng nghe
+        user_said = listen_to_child()
+        
+        # 3. Phản hồi
+        if user_said:
+            st.write(f"Bé đã nói: {user_said}")
+            if target_word in user_said:
+                st.success("Đúng rồi! Tặng bé một bông hoa! 🌸")
+                time.sleep(2)
+                st.session_state.index += 1
+                st.rerun()
+            else:
+                st.error("Chưa đúng, thử lại nhé!")
+                time.sleep(1)
     else:
-        st.write("Hoàn thành bài!")
-        if st.button("Chọn bài khác"):
-            st.session_state.started = False
-            st.rerun()
+        st.balloons()
+        st.write("Chúc mừng bé đã hoàn thành bài học!")
