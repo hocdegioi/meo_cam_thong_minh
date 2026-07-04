@@ -3,7 +3,6 @@ import speech_recognition as sr
 from gtts import gTTS
 import drive_manager
 import tempfile
-import time
 
 # --- Cấu hình trang ---
 st.set_page_config(page_title="Mèo Cam Thông Minh", page_icon="🐱")
@@ -20,13 +19,14 @@ def speak(text, meaning=None):
     display_text = f"### 🐱 Mèo Cam: {text}"
     if meaning:
         display_text += f" <small style='color:gray;'>({meaning})</small>"
-    st.write(display_text, unsafe_allowhtml=True)
+    
+    # ĐÃ SỬA: Thay unsafe_allowhtml thành unsafe_allow_html
+    st.write(display_text, unsafe_allow_html=True)
 
 def listen_and_check(target_text, key_id):
-    """Sử dụng st.audio_input với key duy nhất để tránh lỗi trùng lặp"""
+    """Sử dụng st.audio_input với key duy nhất"""
     st.info(f"🎤 Bé hãy bấm vào biểu tượng Micro và nói: **{target_text}**")
     
-    # Thêm key duy nhất dựa trên key_id truyền vào
     audio_value = st.audio_input("Ghi âm tại đây", key=f"audio_{key_id}")
     
     if audio_value:
@@ -45,7 +45,7 @@ def listen_and_check(target_text, key_id):
             else:
                 st.warning("Bé thử lại nhé!")
                 return False
-        except Exception as e:
+        except Exception:
             st.error("Mèo Cam chưa nghe rõ, bé nói lại nhé!")
             return False
 
@@ -62,7 +62,6 @@ if st.button("Bắt đầu bài học"):
         if not vocabulary_list:
             st.warning("Bài học này chưa có từ vựng nào!")
         
-        # Dùng enumerate để tạo key duy nhất cho mỗi từ
         for i, item in enumerate(vocabulary_list):
             if isinstance(item, dict):
                 word_en = item.get('en', '')
