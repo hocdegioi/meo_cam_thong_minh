@@ -1,75 +1,78 @@
 import streamlit as st
-import speech_recognition as sr
+import streamlit.components.v1 as components
 from gtts import gTTS
 import drive_manager
 import tempfile
+import time
 
-# --- Cấu hình trang ---
 st.set_page_config(page_title="Mèo Cam Thông Minh", page_icon="🐱")
-st.title("🐱 Mèo Cam Thông Minh")
 
-# --- Hàm hỗ trợ ---
-def speak(text, meaning=None):
-    """Phát âm thanh và hiển thị nghĩa tiếng Việt"""
+# --- Hàm phát âm ---
+def speak(text):
     tts = gTTS(text=text, lang='en')
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
         tts.save(fp.name)
         st.audio(fp.name, format="audio/mp3", autoplay=True)
-    
-    display_text = f"### 🐱 Mèo Cam: {text}"
-    if meaning:
-        display_text += f" <small style='color:gray;'>({meaning})</small>"
-    
-    # ĐÃ SỬA: Thay unsafe_allowhtml thành unsafe_allow_html
-    st.write(display_text, unsafe_allow_html=True)
 
-def listen_and_check(target_text, key_id):
-    """Sử dụng st.audio_input với key duy nhất"""
-    st.info(f"🎤 Bé hãy bấm vào biểu tượng Micro và nói: **{target_text}**")
-    
-    audio_value = st.audio_input("Ghi âm tại đây", key=f"audio_{key_id}")
-    
-    if audio_value:
-        st.write("Đang xử lý giọng nói...")
-        r = sr.Recognizer()
-        try:
-            with sr.AudioFile(audio_value) as source:
-                audio = r.record(source)
-            
-            user_text = r.recognize_google(audio, language="en-US")
-            st.write(f"**Bé nói:** *{user_text}*")
-            
-            if target_text.lower().strip() == user_text.lower().strip():
-                st.success("Tuyệt quá! 🌸")
-                return True
-            else:
-                st.warning("Bé thử lại nhé!")
-                return False
-        except Exception:
-            st.error("Mèo Cam chưa nghe rõ, bé nói lại nhé!")
-            return False
+# --- Mã JavaScript để lắng nghe liên tục ---
+listening_js = """
+<script>
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        // Gửi kết quả về Streamlit
+        window.parent.postMessage({type: 'speech', value: transcript}, '*');
+    };
+    recognition.start();
+</script>
+"""
 
 # --- Giao diện chính ---
-chon_lop = st.selectbox("Chọn lớp:", ["Lop_3"])
-chon_bai = st.text_input("Nhập tên bài:", "Unit_1")
+st.title("🐱 Mèo Cam Giao Tiếp")
 
-if st.button("Bắt đầu bài học"):
-    content = drive_manager.get_lesson_content(chon_lop, chon_bai)
+if 'started' not in st.session_state:
+    if st.button("Bấm để bắt đầu giao tiếp với Mèo Cam"):
+        st.session_state.started = True
+        st.session_state.index = 0
+        st.session_state.vocabulary = drive_manager.get_lesson_content("Lop_3", "Unit_1").get('vocabulary', [])
+        st.rerun()
+else:
+    components.html(listening_js, height=0) # Kích hoạt chế độ nghe
     
-    if content and isinstance(content, dict):
-        vocabulary_list = content.get('vocabulary', [])
+    idx = st.session_state.index
+    vocab = st.session_state.vocabulary
+    
+    if idx < len(vocab):
+        item = vocab[idx]
+        word_en = item.get('en', item) if isinstance(item, dict) else str(item)
+        word_vi = item.get('vi', '') if isinstance(item, dict) else ''
         
-        if not vocabulary_list:
-            st.warning("Bài học này chưa có từ vựng nào!")
+        # Hiển thị bài học
+        st.markdown(f"## 🐱 Mèo Cam đang dạy: **{word_en}**")
+        st.write(f"### Nghĩa: {word_vi}")
         
-        for i, item in enumerate(vocabulary_list):
-            if isinstance(item, dict):
-                word_en = item.get('en', '')
-                word_vi = item.get('vi', '')
-                speak(word_en, word_vi)
-                listen_and_check(word_en, f"{i}_{word_en}")
-            else:
-                speak(str(item))
-                listen_and_check(str(item), f"{i}_{item}")
+        # Mèo Cam đọc (chỉ đọc khi vừa chuyển từ mới)
+        if 'last_spoken' not in st.session_state or st.session_state.last_spoken != word_en:
+            speak(word_en)
+            st.session_state.last_spoken = word_en
+        
+        # Lắng nghe phản hồi từ JS
+        # Lưu ý: Bạn cần dùng st.query_params hoặc callback để nhận postMessage
+        # Để đơn giản nhất trong môi trường này, ta giả định cơ chế nhận:
+        st.info("🎤 Mèo Cam đang lắng nghe bé...")
+        
+        # Giả lập logic kiểm tra (Cần thêm cơ chế nhận message từ JS phía trên)
+        # Nếu bé nói đúng:
+        if st.button("Mô phỏng bé nói đúng (Test)"): 
+            st.success("Tuyệt vời! 🌸")
+            st.balloons()
+            time.sleep(2)
+            st.session_state.index += 1
+            st.rerun()
+            
     else:
-        st.error("Dữ liệu bài học không đúng định dạng. Hãy kiểm tra file JSON trên Drive!")
+        st.write("🎉 Bé đã học xong bài!")
