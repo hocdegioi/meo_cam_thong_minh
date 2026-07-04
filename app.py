@@ -24,18 +24,20 @@ def speak(text, meaning=None):
     st.write(display_text, unsafe_allow_html=True)
 
 def listen_and_check(target_text):
-    """Lắng nghe giọng nói với độ nhạy tối ưu cho từ ngắn"""
-    r = sr.Recognizer()
-    r.energy_threshold = 200      # Nhạy hơn
-    r.dynamic_energy_threshold = True
-    r.pause_threshold = 0.5       
+    """Sử dụng st.audio_input để nhận âm thanh từ trình duyệt"""
+    st.info(f"🎤 Bé hãy bấm vào biểu tượng Micro và nói: **{target_text}**")
     
-    with sr.Microphone() as source:
-        st.info(f"🎤 Bé hãy lặp lại: **{target_text}**")
-        time.sleep(0.5) # Độ trễ sau khi Mèo nói xong
-        
+    # Đây là tính năng mới của Streamlit cho phép thu âm trực tiếp trên trình duyệt
+    audio_value = st.audio_input("Ghi âm tại đây")
+    
+    if audio_value:
+        st.write("Đang xử lý giọng nói...")
+        r = sr.Recognizer()
         try:
-            audio = r.listen(source, timeout=8, phrase_time_limit=3)
+            # Đọc dữ liệu từ file âm thanh mà trình duyệt vừa gửi lên
+            with sr.AudioFile(audio_value) as source:
+                audio = r.record(source)
+            
             user_text = r.recognize_google(audio, language="en-US")
             st.write(f"**Bé nói:** *{user_text}*")
             
@@ -45,7 +47,7 @@ def listen_and_check(target_text):
             else:
                 st.warning("Bé thử lại nhé!")
                 return False
-        except:
+        except Exception as e:
             st.error("Mèo Cam chưa nghe rõ, bé nói lại nhé!")
             return False
 
