@@ -1,7 +1,3 @@
 streamlit
-google-api-python-client
-google-auth-httplib2
-google-auth-oauthlib
-openai-whisper
-gTTS
-gdown
+speech_recognition
+gtts
