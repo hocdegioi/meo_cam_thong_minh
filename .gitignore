@@ -1,0 +1,5 @@
+# Các file rác cần bỏ qua
+*.mp3
+__pycache__/
+.DS_Store
+.streamlit/

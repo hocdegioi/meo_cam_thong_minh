@@ -1,0 +1,10 @@
+{
+  "unit": "Unit 1",
+  "title": "Hello",
+  "meaning": "Xin chào",
+  "dialogue": [
+    "A: Hello, I'm Nam.",
+    "B: Hi Nam, I'm Quan."
+  ],
+  "vocabulary": ["Hello", "Hi", "I am", "Name"]
+}
