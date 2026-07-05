@@ -1,30 +1,29 @@
 import gdown
 import json
 import os
+import streamlit as st
 
-# ID file index.json của bạn
+# ID của file index.json trên Drive (đã upload dạng tệp tin thô)
 MASTER_ID = "1JlFIpJZJ1cgMMlSZo9oCKBv7n3xOljQL" 
 
 def get_master_index():
-    # Xóa file cũ nếu tồn tại để tải bản mới nhất về
-    if os.path.exists("index.json"):
-        os.remove("index.json")
-    
-    # Tải file từ Drive
+    filename = "data_index.json"
     url = f'https://drive.google.com/uc?id={MASTER_ID}'
-    gdown.download(url, "index.json", quiet=False, fuzzy=True)
-    
-    # Đọc file
-    with open("index.json", "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        gdown.download(url, filename, quiet=False, fuzzy=True)
+        with open(filename, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        st.error(f"Không thể tải file index: {e}")
+        return {}
 
 def get_lesson_content(file_id):
     output = "lesson.json"
-    if os.path.exists(output):
-        os.remove(output)
-    
     url = f'https://drive.google.com/uc?id={file_id}'
-    gdown.download(url, output, quiet=False, fuzzy=True)
-    
-    with open(output, "r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        gdown.download(url, output, quiet=False, fuzzy=True)
+        with open(output, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        st.error(f"Không thể tải bài học: {e}")
+        return {"vocabulary": []}

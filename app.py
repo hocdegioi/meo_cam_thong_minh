@@ -15,20 +15,24 @@ if st.session_state.step == 'menu':
     st.subheader("Chào bé, chọn bài học nhé:")
     
     # GỌI HÀM KHÔNG CẦN THAM SỐ
-    index_data = drive_manager.get_master_index()
-    
-    grades = list(index_data.keys())
-    grade = st.selectbox("Chọn Lớp:", grades)
-    
-    units = list(index_data.get(grade, {}).keys())
-    unit = st.selectbox("Chọn Unit:", units)
-    
-    if st.button("Bắt đầu giao tiếp"):
-        # Lấy ID từ index đã tải về
-        file_id = index_data[grade][unit]
-        
-        # Tải nội dung
-        content = drive_manager.get_lesson_content(file_id)
+    # Trong app.py, tìm đoạn này:
+index_data = drive_manager.get_master_index() # Gọi KHÔNG truyền tham số
+
+if not index_data:
+    st.warning("Chưa tải được dữ liệu, kiểm tra lại kết nối Drive!")
+    st.stop()
+
+# Sau đó lấy dữ liệu lớp và bài
+grades = list(index_data.keys())
+grade = st.selectbox("Chọn Lớp:", grades)
+units = list(index_data.get(grade, {}).keys())
+unit = st.selectbox("Chọn Unit:", units)
+
+if st.button("Bắt đầu giao tiếp"):
+    file_id = index_data[grade][unit]
+    # Gọi hàm chỉ truyền 1 tham số file_id
+    content = drive_manager.get_lesson_content(file_id) 
+    # ... các bước tiếp theo
         st.session_state.vocab = content.get('vocabulary', [])
         st.session_state.index = 0
         st.session_state.step = 'learning'
