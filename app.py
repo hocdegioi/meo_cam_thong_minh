@@ -10,30 +10,29 @@ if 'step' not in st.session_state: st.session_state.step = 'menu'
 
 st.title("🐱 Mèo Cam Giao Tiếp")
 
+# Trong phần menu của app.py
 if st.session_state.step == 'menu':
     st.subheader("Chào bé, chọn bài học nhé:")
+    
+    # GỌI HÀM KHÔNG CẦN THAM SỐ
     index_data = drive_manager.get_master_index()
     
-    # Lấy danh sách Lớp tự động từ index.json
     grades = list(index_data.keys())
     grade = st.selectbox("Chọn Lớp:", grades)
     
-    # Lấy danh sách Unit tự động dựa vào Lớp đã chọn
     units = list(index_data.get(grade, {}).keys())
     unit = st.selectbox("Chọn Unit:", units)
     
-    # Tìm đoạn code này trong app.py và sửa lại:
-if st.button("Bắt đầu giao tiếp"):
-    # 1. Lấy file_id từ index_data dựa vào grade và unit đã chọn
-    file_id = index_data[grade][unit]
-    
-    # 2. Truyền đúng 1 tham số duy nhất là file_id vào hàm
-    content = drive_manager.get_lesson_content(file_id)
-    
-    st.session_state.vocab = content.get('vocabulary', [])
-    st.session_state.index = 0
-    st.session_state.step = 'learning'
-    st.rerun()
+    if st.button("Bắt đầu giao tiếp"):
+        # Lấy ID từ index đã tải về
+        file_id = index_data[grade][unit]
+        
+        # Tải nội dung
+        content = drive_manager.get_lesson_content(file_id)
+        st.session_state.vocab = content.get('vocabulary', [])
+        st.session_state.index = 0
+        st.session_state.step = 'learning'
+        st.rerun()
 
 elif st.session_state.step == 'learning':
     vocab = st.session_state.vocab
