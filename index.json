@@ -1,0 +1,22 @@
+{
+  "Lop_3": {
+    "Unit_1": "ID_FILE_UNIT_1", "Unit_2": "ID_FILE_UNIT_2", "Unit_3": "ID_FILE_UNIT_3", "Unit_4": "ID_FILE_UNIT_4", "Unit_5": "ID_FILE_UNIT_5",
+    "Unit_6": "ID_FILE_UNIT_6", "Unit_7": "ID_FILE_UNIT_7", "Unit_8": "ID_FILE_UNIT_8", "Unit_9": "ID_FILE_UNIT_9", "Unit_10": "ID_FILE_UNIT_10",
+    "Unit_11": "ID_FILE_UNIT_11", "Unit_12": "ID_FILE_UNIT_12", "Unit_13": "ID_FILE_UNIT_13", "Unit_14": "ID_FILE_UNIT_14", "Unit_15": "ID_FILE_UNIT_15",
+    "Unit_16": "ID_FILE_UNIT_16", "Unit_17": "ID_FILE_UNIT_17", "Unit_18": "ID_FILE_UNIT_18", "Unit_19": "ID_FILE_UNIT_19", "Unit_20": "ID_FILE_UNIT_20"
+  },
+  "Lop_4": {
+    "Unit_1": "ID_FILE_UNIT_1", "Unit_2": "ID_FILE_UNIT_2", "Unit_3": "ID_FILE_UNIT_3", "Unit_4": "ID_FILE_UNIT_4", "Unit_5": "ID_FILE_UNIT_5",
+    "Unit_6": "ID_FILE_UNIT_6", "Unit_7": "ID_FILE_UNIT_7", "Unit_8": "ID_FILE_UNIT_8", "Unit_9": "ID_FILE_UNIT_9", "Unit_10": "ID_FILE_UNIT_10",
+    "Unit_11": "ID_FILE_UNIT_11", "Unit_12": "ID_FILE_UNIT_12", "Unit_13": "ID_FILE_UNIT_13", "Unit_14": "ID_FILE_UNIT_14", "Unit_15": "ID_FILE_UNIT_15",
+    "Unit_16": "ID_FILE_UNIT_16", "Unit_17": "ID_FILE_UNIT_17", "Unit_18": "ID_FILE_UNIT_18", "Unit_19": "ID_FILE_UNIT_19", "Unit_20": "ID_FILE_UNIT_20"
+  },
+  "Lop_5": { "Unit_1": "ID_FILE_UNIT_1", "Unit_2": "ID_FILE_UNIT_2", "Unit_3": "ID_FILE_UNIT_3", "Unit_4": "ID_FILE_UNIT_4", "Unit_5": "ID_FILE_UNIT_5", "Unit_6": "ID_FILE_UNIT_6", "Unit_7": "ID_FILE_UNIT_7", "Unit_8": "ID_FILE_UNIT_8", "Unit_9": "ID_FILE_UNIT_9", "Unit_10": "ID_FILE_UNIT_10", "Unit_11": "ID_FILE_UNIT_11", "Unit_12": "ID_FILE_UNIT_12", "Unit_13": "ID_FILE_UNIT_13", "Unit_14": "ID_FILE_UNIT_14", "Unit_15": "ID_FILE_UNIT_15", "Unit_16": "ID_FILE_UNIT_16", "Unit_17": "ID_FILE_UNIT_17", "Unit_18": "ID_FILE_UNIT_18", "Unit_19": "ID_FILE_UNIT_19", "Unit_20": "ID_FILE_UNIT_20" },
+  "Lop_6": { "Unit_1": "...", "Unit_20": "..." },
+  "Lop_7": { "Unit_1": "...", "Unit_20": "..." },
+  "Lop_8": { "Unit_1": "...", "Unit_20": "..." },
+  "Lop_9": { "Unit_1": "...", "Unit_20": "..." },
+  "Lop_10": { "Unit_1": "...", "Unit_20": "..." },
+  "Lop_11": { "Unit_1": "...", "Unit_20": "..." },
+  "Lop_12": { "Unit_1": "...", "Unit_20": "..." }
+}
