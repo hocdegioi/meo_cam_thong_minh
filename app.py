@@ -11,13 +11,23 @@ if 'step' not in st.session_state: st.session_state.step = 'menu'
 st.title("🐱 Mèo Cam Giao Tiếp")
 
 if st.session_state.step == 'menu':
-    st.subheader("Chọn lớp và bài học:")
+    st.subheader("Chào bé, chọn bài học nhé:")
     index_data = drive_manager.get_master_index()
-    grade = st.selectbox("Lớp:", list(index_data.keys()))
-    unit = st.selectbox("Bài:", list(index_data.get(grade, {}).keys()))
+    
+    # Lấy danh sách Lớp tự động từ index.json
+    grades = list(index_data.keys())
+    grade = st.selectbox("Chọn Lớp:", grades)
+    
+    # Lấy danh sách Unit tự động dựa vào Lớp đã chọn
+    units = list(index_data.get(grade, {}).keys())
+    unit = st.selectbox("Chọn Unit:", units)
     
     if st.button("Bắt đầu giao tiếp"):
-        content = drive_manager.get_lesson_content(grade, unit)
+        # Lấy ID trực tiếp từ file index
+        file_id = index_data[grade][unit]
+        
+        # Tải nội dung bài học
+        content = drive_manager.get_lesson_content(file_id)
         st.session_state.vocab = content.get('vocabulary', [])
         st.session_state.index = 0
         st.session_state.step = 'learning'
