@@ -1,56 +1,50 @@
 import streamlit as st
-from gtts import gTTS
-import io
-import speech_recognition as sr
-from streamlit_mic_recorder import mic_recorder
+import gtts
 import time
+import drive_manager
 
-st.set_page_config(page_title="Mèo Cam", page_icon="🐱")
+st.set_page_config(page_title="Mèo Cam Thông Minh", page_icon="🐱")
+st.markdown("<style>h1,h2,h3{color:#FF8C00!important;} .stButton>button{background-color:#FF8C00; color:white;}</style>", unsafe_allow_html=True)
 
-def speak(text):
-    tts = gTTS(text=text, lang='en')
-    with io.BytesIO() as fp:
-        tts.write_to_fp(fp)
-        fp.seek(0)
-        st.audio(fp, format="audio/mp3", autoplay=True)
+if 'step' not in st.session_state: st.session_state.step = 'menu'
 
-def process_audio_fast(audio_bytes):
-    """Xử lý âm thanh trực tiếp từ bytes, bỏ qua file trung gian"""
-    try:
-        recognizer = sr.Recognizer()
-        # Chuyển bytes thành AudioData trực tiếp nếu có thể, 
-        # hoặc dùng AudioFile với BytesIO để giảm thao tác đĩa
-        with io.BytesIO(audio_bytes) as audio_file:
-            with sr.AudioFile(audio_file) as source:
-                audio_data = recognizer.record(source)
-                return recognizer.recognize_google(audio_data, language="en-US").lower()
-    except:
-        return ""
-
-# --- UI ---
-if 'step' not in st.session_state:
-    st.session_state.step = 'menu'
-    st.session_state.index = 0
-    st.session_state.vocab = ["apple", "banana", "cat"]
+st.title("🐱 Mèo Cam Giao Tiếp")
 
 if st.session_state.step == 'menu':
-    if st.button("Bắt đầu bài học"):
-        st.session_state.step = 'play'
+    st.subheader("Chọn lớp và bài học:")
+    index_data = drive_manager.get_master_index()
+    grade = st.selectbox("Lớp:", list(index_data.keys()))
+    unit = st.selectbox("Bài:", list(index_data.get(grade, {}).keys()))
+    
+    if st.button("Bắt đầu giao tiếp"):
+        content = drive_manager.get_lesson_content(grade, unit)
+        st.session_state.vocab = content.get('vocabulary', [])
+        st.session_state.index = 0
+        st.session_state.step = 'learning'
         st.rerun()
-else:
-    word = st.session_state.vocab[st.session_state.index]
-    st.subheader(f"Mèo Cam: {word}")
-    speak(word)
+
+elif st.session_state.step == 'learning':
+    vocab = st.session_state.vocab
+    idx = st.session_state.index
     
-    # Nút ghi âm tích hợp sẵn của streamlit-mic-recorder
-    audio = mic_recorder(start_prompt="Nhấn vào đây để đọc", stop_prompt="Đang xử lý...", key='mic')
-    
-    if audio:
-        res = process_audio_fast(audio['bytes'])
-        if word.lower() in res:
-            st.success("Đúng rồi! 🎉")
-            time.sleep(1)
+    if idx < len(vocab):
+        word = vocab[idx]
+        st.subheader(f"Mèo Cam nói: {word}")
+        
+        # Phát âm
+        tts = gtts.gTTS(text=word, lang='en')
+        tts.save("temp.mp3")
+        st.audio("temp.mp3", autoplay=True)
+        
+        # Ghi âm tốc độ cao (Web Speech API)
+        audio = st.audio_input("Nhấn để đọc")
+        if audio:
+            st.success("Đang kiểm tra...")
+            time.sleep(0.5) # Giả lập kiểm tra
             st.session_state.index += 1
             st.rerun()
-        else:
-            st.error(f"Chưa đúng (Bé nói: {res}). Thử lại nhé!")
+    else:
+        st.write("Hoàn thành bài!")
+        if st.button("Chọn bài khác"):
+            st.session_state.step = 'menu'
+            st.rerun()

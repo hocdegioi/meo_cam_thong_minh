@@ -1,27 +1,19 @@
-import os
 import gdown
 import json
+import os
 
-FOLDER_ID = "1nQ8PxZsy35OZvkJCdsmOGSuW8JalAxeq"
-DATA_DIR = "data_storage"
+MASTER_ID = "YOUR_MASTER_INDEX_ID" # THAY ID VÀO ĐÂY
 
-def sync_data():
-    if not os.path.exists(DATA_DIR):
-        os.makedirs(DATA_DIR)
-    url = f"https://drive.google.com/drive/folders/{FOLDER_ID}"
-    gdown.download_folder(url, output=DATA_DIR, quiet=False)
+def get_master_index():
+    if not os.path.exists("master.json"):
+        gdown.download(f'https://drive.google.com/uc?id={MASTER_ID}', "master.json", quiet=False)
+    with open("master.json", "r", encoding="utf-8") as f:
+        return json.load(f)
 
-def list_folders(dummy_id=None):
-    """Liệt kê danh sách các thư mục Lớp_x có trong data_storage"""
-    if not os.path.exists(DATA_DIR):
-        return []
-    # Lấy danh sách thư mục trong data_storage
-    folders = [f for f in os.listdir(DATA_DIR) if os.path.isdir(os.path.join(DATA_DIR, f))]
-    return [{"name": f} for f in sorted(folders)]
-
-def get_lesson_content(lop, bai):
-    file_path = os.path.join(DATA_DIR, lop, bai, "content.json")
-    if os.path.exists(file_path):
-        with open(file_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    return None
+def get_lesson_content(grade, unit):
+    index = get_master_index()
+    file_id = index.get(grade, {}).get(unit)
+    output = "lesson.json"
+    gdown.download(f'https://drive.google.com/uc?id={file_id}', output, quiet=False, fuzzy=True)
+    with open(output, "r", encoding="utf-8") as f:
+        return json.load(f)
