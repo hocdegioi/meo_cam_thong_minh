@@ -22,16 +22,18 @@ if st.session_state.step == 'menu':
     units = list(index_data.get(grade, {}).keys())
     unit = st.selectbox("Chọn Unit:", units)
     
-    if st.button("Bắt đầu giao tiếp"):
-        # Lấy ID trực tiếp từ file index
-        file_id = index_data[grade][unit]
-        
-        # Tải nội dung bài học
-        content = drive_manager.get_lesson_content(file_id)
-        st.session_state.vocab = content.get('vocabulary', [])
-        st.session_state.index = 0
-        st.session_state.step = 'learning'
-        st.rerun()
+    # Tìm đoạn code này trong app.py và sửa lại:
+if st.button("Bắt đầu giao tiếp"):
+    # 1. Lấy file_id từ index_data dựa vào grade và unit đã chọn
+    file_id = index_data[grade][unit]
+    
+    # 2. Truyền đúng 1 tham số duy nhất là file_id vào hàm
+    content = drive_manager.get_lesson_content(file_id)
+    
+    st.session_state.vocab = content.get('vocabulary', [])
+    st.session_state.index = 0
+    st.session_state.step = 'learning'
+    st.rerun()
 
 elif st.session_state.step == 'learning':
     vocab = st.session_state.vocab
