@@ -37,33 +37,27 @@ if st.session_state.step == 'menu':
         st.rerun()
 
 elif st.session_state.step == 'learning':
-    vocab_list = st.session_state.vocab # Danh sách các dict: [{"en": "...", "vi": "..."}, ...]
+    vocab_list = st.session_state.vocab
     idx = st.session_state.index
     
     if idx < len(vocab_list):
-        item = vocab_list[idx] # Lấy dictionary hiện tại
+        item = vocab_list[idx]
         word_en = item.get("en", "")
         word_vi = item.get("vi", "")
         
         st.subheader(f"Mèo Cam nói: {word_en}")
         st.write(f"Nghĩa là: {word_vi}")
         
-        # Phát âm từ tiếng Anh
+        # Phát âm
         tts = gtts.gTTS(text=word_en, lang='en')
         tts.save("temp.mp3")
         st.audio("temp.mp3", autoplay=True)
         
-        # Ghi âm
         audio = st.audio_input("Nhấn để đọc")
         if audio:
             st.success("Đang kiểm tra...")
-            time.sleep(0.5) 
+            time.sleep(0.5)
             st.session_state.index += 1
-            st.rerun()
-    else:
-        st.write("Hoàn thành bài!")
-        if st.button("Chọn bài khác"):
-            st.session_state.step = 'menu'
             st.rerun()
     else:
         st.write("Hoàn thành bài!")
