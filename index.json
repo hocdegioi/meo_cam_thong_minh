@@ -1,14 +1,9 @@
 {
   "Lop_3": {
-    "Unit_1": "ID_FILE_UNIT_1", 
-    "Unit_2": "ID_FILE_UNIT_2",
-    "Unit_3": "ID_FILE_UNIT_3",
-    "Unit_4": "ID_FILE_UNIT_4",
-    "Unit_5": "ID_FILE_UNIT_5",
-    "Unit_6": "ID_FILE_UNIT_6",
-    "Unit_7": "ID_FILE_UNIT_7",
-    "Unit_8": "ID_FILE_UNIT_8",
-    "Unit_9": "ID_FILE_UNIT_9",
-    "Unit_10": "ID_FILE_UNIT_10"
+    "Unit_1": "ID_FILE_CONTENT_CUA_UNIT_1",
+    "Unit_2": "ID_FILE_CONTENT_CUA_UNIT_2"
+  },
+  "Lop_4": {
+    "Unit_1": "ID_FILE_CONTENT_CUA_LOP4_UNIT1"
   }
 }
