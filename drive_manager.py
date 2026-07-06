@@ -18,9 +18,8 @@ def get_master_index():
         return {}
 
 def get_lesson_content(file_id):
-    output = "lesson.json"
-    url = f'https://drive.google.com/uc?id={file_id}'
-    try:
+    if not file_id or file_id == "...": # Kiểm tra nếu ID chưa có hoặc là "..."
+        return {"vocabulary": ["Bài học này chưa có nội dung, bé chọn bài khác nhé!"]}
         gdown.download(url, output, quiet=False, fuzzy=True)
         with open(output, "r", encoding="utf-8") as f:
             return json.load(f)

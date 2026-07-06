@@ -33,7 +33,7 @@ if st.button("Bắt đầu giao tiếp"):
     # Gọi hàm chỉ truyền 1 tham số file_id
     content = drive_manager.get_lesson_content(file_id) 
     # ... các bước tiếp theo
-        st.session_state.vocab = content.get('vocabulary', [])
+ st.session_state.vocab = content.get('vocabulary', [])
         st.session_state.index = 0
         st.session_state.step = 'learning'
         st.rerun()
